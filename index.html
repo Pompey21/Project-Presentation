@@ -214,7 +214,7 @@
           </div>
 
           <div class="tile is-parent">
-            <a href="#exp" class="tile is-child box">
+            <a href="#experiments" class="tile is-child box">
               <p class="subtitle">
                 <font size="-1">Experiments</font>
               </p>
@@ -225,6 +225,14 @@
             <a href="#conclusion" class="tile is-child box">
               <p class="subtitle">
                 <font size="-1">Conclusion and Limitations</font>
+              </p>
+            </a>
+          </div>
+
+          <div class="tile is-parent">
+            <a href="#contributions" class="tile is-child box">
+              <p class="subtitle">
+                <font size="-1">Individual Contributions</font>
               </p>
             </a>
           </div>
@@ -511,7 +519,7 @@
                   projectiles—a straightforward reward function proved insufficient for mastering multiple tasks simultaneously. 
                   Therefore, we segmented the learning process into three sequential curriculum phases:
 
-                  <h4 class="title is-6">1] Basic Stabilization and Hovering:</h4>
+                  <h4 class="title is-5.5">1] Basic Stabilization and Hovering:</h4>
                   <div class="content has-text-justified">
                     <p>
                       The first phase focuses on basic stabilization and learning to hover toward gates. High rewards are given for maintaining stability, 
@@ -532,7 +540,7 @@
                   </div>
 
 
-                  <h4 class="title is-6">2] Navigation:</h4>
+                  <h4 class="title is-5.5">2] Navigation:</h4>
                   <div class="content has-text-justified">
                     <p>
                       The second phase emphasizes navigation. Rewards increase as the drone decreases the distance to gates and successfully 
@@ -553,7 +561,7 @@
                   </div>
 
 
-                  <h4 class="title is-6">3] Evasion and Navigation:</h4>
+                  <h4 class="title is-5.5">3] Evasion and Navigation:</h4>
                   <div class="content has-text-justified">
                     <p>
                       In the final phase, the drone must navigate gates and evade projectiles. We introduce projectiles without 
@@ -773,7 +781,7 @@
         <div class="content has-text-justified">
           <h3 class="title is-4">Experimental Setup</h3>
           <div>
-            <h4 class="title is-6"> 1] Simulator Environment</h4>
+            <h4 class="title is-5.5"> 1] Simulator Environment</h4>
             <div class="content has-text-justified">
               <p>
                 We utilize the Gym Pybullet Drones environment~\cite{panerati2021learning} for its simplicity and realistic physics simulations. 
@@ -799,15 +807,19 @@
               </p>
             </div>
 
-            <h4 class="title is-6"> 2] Evaluation</h4>
+            <h4 class="title is-5.5"> 2] Evaluation</h4>
             <div class="content has-text-justified">
               <p>
-                To evaluate our policies, we designed several metrics. We measure the average number of gates passed before the drone 
-                crashes due to a projectile hit or any other reason. Additionally, we measure the success rate, defined as the percentage 
-                of episodes where the drone completes all five gates. We also measure the average time taken to transit between two consecutive 
-                gates. These metrics capture the essential aspects of the optimization problem: passing through as many checkpoints as possible 
-                as quickly as possible. Finally, to provide more context for comparisons, we measure the average number of projectiles encountered 
-                per episode before either completing the episode or being struck down by a projectile.
+                To evaluate our policies, we designed several metrics. We measure the average number of gates passed before the drone crashes due to a 
+                projectile hit or any other reason. Additionally, we measure the success rate, defined as the percentage of episodes where the drone 
+                completes all five gates. We also measure the average time taken to transit between two consecutive gates. These metrics capture the 
+                essential aspects of the optimization problem: passing through as many checkpoints as possible as quickly as possible. Finally, to 
+                provide more context for comparisons, we measure the average number of projectiles encountered per episode before either completing the 
+                episode or being struck down by a projectile.
+              </p>
+              <p>
+                These metrics are calculated across 20 gate layouts with different seeds, where each layout is evaluated for 30 seconds, approximately 
+                corresponding to 3 episodes.
               </p>
             </div>
           </div>
@@ -815,7 +827,7 @@
           <h3 class="title is-4">Training Details</h3>
           <div class="title is-6">
 
-            <h4 class="title is-6"">1] Base-privileged Policy Training</h4>
+            <h4 class="title is-5.5"">1] Base-privileged Policy Training</h4>
             <div class="content has-text-justified" style="font-weight: normal;">
               <p>
                 The MLP $\mu$ that maps privileged information to the extrinsic vector $\mathbf{z}_t$ is a 3-layer MLP with hidden layer 
@@ -846,7 +858,7 @@
               </p>
             </div>
 
-            <h4 class="title is-6"> 2] Student Policy and DDMP Training</h4>
+            <h4 class="title is-5.5"> 2] Student Policy and DDMP Training</h4>
             <div class="content has-text-justified" style="font-weight: normal;">
               <p>
                 As described in Section~\ref{sec:student}, for the student policy, we explore both TCN and Transformer architectures for memory-based networks. The TCN uses 
@@ -870,7 +882,7 @@
               </p>
             </div>
 
-            <h4 class="title is-6"> 3] Training Hardware</h4>
+            <h4 class="title is-5.5"> 3] Training Hardware</h4>
             <div class="content has-text-justified" style="font-weight: normal;">
               <p>
                 The models were trained using a CUDA-enabled NVIDIA V100 PCIe 32 GB GPU with 7 TFLOPS provided by the Scitas cluster.
@@ -897,6 +909,42 @@
 
 
 
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Conclusion & Limitations. -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3" id="conclusion">V. Conclusion & Limitations</h2>
+        <div class="content has-text-justified">
+        
+
+        </div>
+      </div>
+    </div>
+    <!--/ Conclusion & Limitations. -->
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Individual Contributions. -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3" id="contributions">VI. Individual Contributions</h2>
+        <div class="content has-text-justified">
+        
+
+        </div>
+      </div>
+    </div>
+    <!--/ Individual Contributions. -->
+  </div>
+</section>
+
+
+
+
+
   <!-- Youtube video -->
   <section class="hero is-small is-light">
     <div class="hero-body">
@@ -908,7 +956,7 @@
 
             <div class="publication-video">
               <!-- Youtube embed code here -->
-              <iframe src="https://www.youtube.com/embed/JkaxUblCGz0" frameborder="0" allow="autoplay; encrypted-media"
+              <iframe src="https://youtu.be/FgNuYghDCjg" frameborder="0" allow="autoplay; encrypted-media"
                 allowfullscreen></iframe>
             </div>
           </div>
