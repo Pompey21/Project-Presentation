@@ -1,3 +1,10 @@
+# How to Run It
+You can run this website setup locally - all you need to do is run the local server. You can easily do that with the following python command:
+```bash
+python -m http.server
+```
+Once the command was run, you can head over to your browser and open `http://localhost:8000/`
+
 # Academic Project Page Template
 This is an academic paper project page template.
 
