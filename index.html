@@ -468,13 +468,40 @@
               </p>
               
               <h3 class="title is-5">III-B-1. Observation Space</h3>
-              <div class="content has-text-justified"></div>
+              <div class="content has-text-justified">
+                <p>
+                  The drone's observation space includes various metrics from the inertial measurement unit (IMU), such as velocity 
+                  \(\mathbf{v}^d = (v^d_x, v^d_y, v^d_z)\), angular velocity \(\mathbf{w}^d = (w^d_x, w^d_y, w^d_z)\), and orientation 
+                  parameters—roll, pitch, and yaw \(\mathbf{r} = (r, p, y)\). These metrics facilitate faster and more stable learning. 
+                  In the privileged setting, the drone receives data on the relative position and orientation of the next gate \(\mathbf{g} = 
+                  (g_x, g_y, g_z, \phi_x, \phi_y, \phi_z)\) as viewed from the drone’s camera. Additionally, the privileged information includes 
+                  the relative positions and distance \(\mathbf{p}_i = (p_{i_x}, p_{i_y}, p_{i_z}, d)\) and velocities of projectiles \(\mathbf{v}^p_i 
+                  = (v^p_{i_x}, v^p_{i_y}, v^p_{i_z})\) for each \(i\)-th airborne projectile attacking the drone, where \(i \in [1, \dots, P_{\max}]\), 
+                  with \(P_{\max}\) denoting the maximum number of projectiles that can be airborne simultaneously. These cumulative projectile data points 
+                  \(\mathbf{p}\) and \(\mathbf{v}^p\) ensure the model accounts for dynamic threats. If fewer than \(P_{\max}\) projectiles are present, 
+                  non-existent projectiles are represented by zero-padding.
+                </p>
+              </div>
 
               <h3 class="title is-5">III-B-2. Policy Network</h3>
-              <div class="content has-text-justified"></div>
+              <div class="content has-text-justified">
+                <p>
+                  For the base-privileged policy \(\pi_{\text{privileged}}\), we use a multilayer perceptron (MLP) as the neural network architecture 
+                  for the policy head. Similar to RMA~\cite{kumar2021rma}, the policy uses the current drone state (including the previously taken action) 
+                  $\textbf{s}_t = [\mathbf{v}^d_t,\, \mathbf{w}^d_t,\, \mathbf{r}_t,\, \boldsymbol{a}_{t-1}] \in \mathbb{R}^{13}$ and encoded privileged 
+                  information, called the extrinsic vector, $\mathbf{z}_t \in \mathbb{R}^8$, to decide the next action. We obtain the extrinsic vector 
+                  $\mathbf{z}_t$ by passing it through an MLP, denoted as $\mu$, such that $\mu(\mathbf{g}_t,\, \mathbf{p}_t,\, \mathbf{v^p}_t) = \mathbf{z}_t$.
+                </p>
+              </div>
 
               <h3 class="title is-5">III-B-3. Action Space</h3>
-              <div class="content has-text-justified"></div>
+              <div class="content has-text-justified">
+                <p>
+                  The action space of the drone includes controlling the thrust levels of its four rotors. Specifically, the base-privileged policy maps the 
+                  observational input to the thrust levels of these rotors, which are then converted to RPMs for each rotor at every time step \(t\), expressed 
+                  as \(\pi_{\text{privileged}}(\textbf{s}_t, \mathbf{z}_t) = \boldsymbol{a}_t\), where \(\boldsymbol{a}_t = (w^1_t, w^2_t, w^3_t, w^4_t)\).
+                </p>
+              </div>
 
               <h3 class="title is-5">III-B-4. Reward Function</h3>
               <div class="content has-text-justified">
@@ -690,6 +717,9 @@
   </section>
 
 
+
+
+
   <!-- Image carousel -->
   <section class="hero is-small">
     <div class="hero-body">
@@ -741,6 +771,14 @@
       <div class="column is-full-width">
         <h2 class="title is-3" id="experiments">IV. Experiments</h2>
         <div class="content has-text-justified">
+          <h3 class="title is-4">Experimental Setup</h3>
+          <div></div>
+
+          <h3 class="title is-4">Training Details</h3>
+          <div></div>
+
+          <h3 class="title is-4">Training Hardware</h3>
+          <div></div>
         </div>
       </div>
     </div>
