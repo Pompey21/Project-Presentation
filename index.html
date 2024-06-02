@@ -772,13 +772,122 @@
         <h2 class="title is-3" id="experiments">IV. Experiments</h2>
         <div class="content has-text-justified">
           <h3 class="title is-4">Experimental Setup</h3>
-          <div></div>
+          <div>
+            <h4 class="title is-6"> 1] Simulator Environment</h4>
+            <div class="content has-text-justified">
+              <p>
+                We utilize the Gym Pybullet Drones environment~\cite{panerati2021learning} for its simplicity and realistic physics simulations. 
+                While alternatives like Flightmare~\cite{song2020flightmare} and AirSim~\cite{airsim2017fsr} offer more detailed realism, their 
+                complexity and the time required for mastery make them less suitable for our project's timeline. PyBullet is chosen for its 
+                straightforward integration with the Gymnasium library, ease of customization in Python, and sufficient realism.
+              </p>
+              <p>
+                Given the camera's limited field of view, the environment is only partially observable, posing challenges in spatial awareness 
+                and reacting to dynamic obstacles. To address this, we implement several adjustments to create a theoretical framework for successful 
+                vision-based navigation. These modifications optimize the drone's performance and adaptability when relying primarily on visual data.
+              </p>
+              <p>
+                We set the gates' orientation and position on the $y$-axis such that the maximum angle between consecutive gates is $22.5^\circ$ to 
+                facilitate manageable turns and visibility of successive gates. Both training and evaluation involve passing through five gates in total. 
+                During training, the gates are randomly placed at the beginning of each episode. For evaluation, the drone's performance is assessed in 
+                six environments with randomly positioned gates, each with fixed and different seeds.
+              </p>
+              <p>
+                Projectiles are fired towards the drone with a probability of $0.02$ per time step, ensuring the drone's camera can capture them. 
+                This is to accommodate the simulation's single-camera limitation, meaning projectiles are fired in the direction the camera is facing 
+                at the moment of firing. A maximum of two projectiles may be airborne simultaneously to maintain balanced challenge levels.
+              </p>
+            </div>
+
+            <h4 class="title is-6"> 2] Evaluation</h4>
+            <div class="content has-text-justified">
+              <p>
+                To evaluate our policies, we designed several metrics. We measure the average number of gates passed before the drone 
+                crashes due to a projectile hit or any other reason. Additionally, we measure the success rate, defined as the percentage 
+                of episodes where the drone completes all five gates. We also measure the average time taken to transit between two consecutive 
+                gates. These metrics capture the essential aspects of the optimization problem: passing through as many checkpoints as possible 
+                as quickly as possible. Finally, to provide more context for comparisons, we measure the average number of projectiles encountered 
+                per episode before either completing the episode or being struck down by a projectile.
+              </p>
+            </div>
+          </div>
 
           <h3 class="title is-4">Training Details</h3>
-          <div></div>
+          <div class="title is-6">
 
-          <h3 class="title is-4">Training Hardware</h3>
-          <div></div>
+            <h4 class="title is-6"">1] Base-privileged Policy Training</h4>
+            <div class="content has-text-justified" style="font-weight: normal;">
+              <p>
+                The MLP $\mu$ that maps privileged information to the extrinsic vector $\mathbf{z}_t$ is a 3-layer MLP with hidden layer 
+                sizes of 256 and 128. It encodes a privileged vector $[\mathbf{g}_t,\, \mathbf{p}_t,\, \mathbf{v^p}_t] \in \mathbb{R}^{20}$ 
+                (6-dimensional vector for gate orientation, and two 7-dimensional vectors for up to two airborne projectiles) into an extrinsic 
+                vector $\mathbf{z}_t \in \mathbb{R}^8$. The base policy head is a 4-layer MLP with hidden sizes of 128, 64, 32, and 16. It takes as 
+                input the current drone state $\textbf{s}_t = [\mathbf{v}^d_t,\, \mathbf{w}^d_t,\, \mathbf{r}_t,\, \boldsymbol{a}_{t-1}] \in \mathbb{R}^{13}$ 
+                and the extrinsic vector $\mathbf{z}_t \in \mathbb{R}^8$, and outputs the next action $\boldsymbol{a}_t$. GELU activation~\cite{gelu} is used 
+                for all MLP layers. This choice was made despite \textit{Stable Baselines3}'s recommendation for Tanh activation~\cite{stable-baselines}, 
+                as Tanh led to slower learning and convergence of the agent even at the initial curriculum step.
+              </p>
+              <p>
+                We trained the policy using Proximal Policy Optimization (PPO)~\cite{schulman2017proximal} from \textit{Stable Baselines3}~\cite{stable-baselines}, 
+                using its default training parameters and conducting rollouts in 32 parallel environments. Although Soft Actor-Critic (SAC)~\cite{haarnoja2018soft} 
+                is often recommended as a good or even better alternative for continuous control problems, it resulted in much slower convergence during the initial 
+                curriculum step for stabilization and hovering.
+              </p>
+              <p>
+                The reward constants from Section~\ref{sec:reward} used to train base-privileged agents are as follows: $R_\text{crashed}=5$ for the first two 
+                curriculum steps, and $R_\text{crashed}=50$ in the third step to impose a higher penalty for drone crashes caused by projectiles, enabling faster 
+                learning. The reward for passing gates is $R_\text{passed}=100$. The distance progress reward is scaled with $\lambda_\text{dist}=10$ to amplify the 
+                usually small distance progress rewards, and the reward for encountering a projectile is $R_\text{projectile}=2$.
+              </p>
+              <p>
+                A small final note regarding the base-privileged agent: Following the proposals from Song et al.~\cite{song2021autonomous} and Fu et al.~\cite{fu2022learning}, 
+                we provided the agent with privileged positional and orientation information for the next gate and the one after it. While this approach enabled the policy to 
+                perform well during the first two curriculum steps, the agent did not successfully learn to avoid projectiles.
+              </p>
+            </div>
+
+            <h4 class="title is-6"> 2] Student Policy and DDMP Training</h4>
+            <div class="content has-text-justified" style="font-weight: normal;">
+              <p>
+                As described in Section~\ref{sec:student}, for the student policy, we explore both TCN and Transformer architectures for memory-based networks. The TCN uses 
+                6 layers of convolutions with a hidden size of 128. The Transformer uses 6 layers of Transformer encoder layers, also with a hidden size of 128. The policy 
+                head for both architectures is a 4-layer MLP with hidden sizes of 128, 64, 32, and 16, similar to the policy head for base-privileged agents.
+              </p>
+              <p>
+                For the DDMP, we experiment only with the Transformer architecture for the Drone Dynamics Module due to the discouraging results obtained with TCN, as discussed 
+                in Section~\ref{sec:results}. This setup also uses 6 layers of Transformer encoder layers with a hidden size of 128.
+              </p>
+              <p>
+                For both vision-based implementations, we use the previous drone states and observations from the last 0.5 seconds, corresponding to $k=12$ previous steps. This 
+                helps the model estimate the dynamics of the environment, either implicitly (student policy) or explicitly (DDMP).
+              </p>
+              <p>
+                To collect the training data of the state-action history for these policies, we unroll the trained base policy $\pi_\text{privileged}$~\cite{fu2022learning}.
+              </p>
+              <p>
+                For training the student policy through imitation learning and training the DDM, we use the AdamW optimizer~\cite{loshchilov2019decoupled} with a learning 
+                rate of $1e-4$, training for 300 epochs. The MultiStepLR scheduler decreases the learning rate by a factor of 0.5 every 100 epochs.
+              </p>
+            </div>
+
+            <h4 class="title is-6"> 3] Training Hardware</h4>
+            <div class="content has-text-justified" style="font-weight: normal;">
+              <p>
+                The models were trained using a CUDA-enabled NVIDIA V100 PCIe 32 GB GPU with 7 TFLOPS provided by the Scitas cluster.
+              </p>
+            </div>
+
+          </div>
+
+          <h3 class="title is-4">Policy Comparison</h3>
+          <div class="content has-text-justified">
+            <p>
+              The results show a significant discrepancy between the baseline privileged agent and our two approaches. We also observe that the complex 
+              dynamics in this setup are not adequately captured by less descriptive TCN models, necessitating the use of Transformer architecture for 
+              both the student policy and drone dynamics module. Direct comparisons indicate that the DDMP approach slightly outperforms the student 
+              policy approach in both metrics.
+            </p>
+          </div>
         </div>
       </div>
     </div>
